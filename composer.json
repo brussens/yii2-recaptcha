@@ -1,0 +1,26 @@
+{
+  "name": "brussens/yii2-recaptcha",
+  "description": "Google ReCaptcha v2.0 Yii 2.x.x extension",
+  "license": "MIT",
+  "type": "yii2-extension",
+  "version":"1.0.0",
+  "keywords": ["yii2", "yii", "recaptcha", "google"],
+  "authors": [
+    {
+      "name": "Brusensky Dmitry",
+      "email": "brussens@nativeweb.ru",
+      "url": "http://nativeweb.ru"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=5.4.0",
+    "yiisoft/yii2": "*",
+    "google/recaptcha": "~1.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "brussens\\yii2\\extensions\\recaptcha\\": "src"
+    }
+  }
+}
