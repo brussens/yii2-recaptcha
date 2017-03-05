@@ -16,17 +16,17 @@ or add
 
 to the require section of your `composer.json` file.
 
-Add to your config file:
+Add to your bootstrap file:
 ```php
-'components' => [
-    ...
-    'recaptcha' => [
-        'class' => 'brussens\\yii2\\extensions\\recaptcha\\Component',
-        'siteKey' => '!!!Insert your public key here!!!',
-        'secretKey' => '!!!Insert your secret key here!!!'
-    ],
-    ...
-],
+
+\Yii::$container->set(ReCaptcha\ReCaptcha::class, function() {
+
+});
+
+\Yii::$container->set(\brussens\yii2\extensions\recaptcha\Widget::class, function() {
+
+});
+
 ```
 
 Add in your model validation rules

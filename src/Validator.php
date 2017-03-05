@@ -11,14 +11,39 @@
  * @package brussens\yii2\extensions\recaptcha
  */
 namespace brussens\yii2\extensions\recaptcha;
+
+
 use Yii;
 use ReCaptcha\ReCaptcha;
+
+
 class Validator extends \yii\validators\Validator
 {
     /**
      * @var bool
      */
     public $skipOnEmpty = false;
+
+    /**
+     * @var ReCaptcha
+     */
+    private $reCaptcha;
+
+    /**
+     * Validator constructor.
+     *
+     * @param ReCaptcha $reCaptcha
+     * @param array $config
+     *
+     * @internal param string $secretKey
+     */
+    public function __construct(ReCaptcha $reCaptcha, $config = [])
+    {
+        $this->reCaptcha = $reCaptcha;
+        parent::__construct($config);
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -29,6 +54,8 @@ class Validator extends \yii\validators\Validator
             $this->message = Yii::t('yii', 'The verification code is incorrect.');
         }
     }
+
+
     /**
      * @param mixed $value
      * @return array|null
@@ -40,10 +67,11 @@ class Validator extends \yii\validators\Validator
         if(!$value) {
             return [Yii::t('yii', '{attribute} cannot be blank.'), []];
         }
-        $recaptcha = new ReCaptcha(Yii::$app->recaptcha->secretKey);
-        $response = $recaptcha->verify($value, Yii::$app->getRequest()->getUserIP());
+        $response = $this->reCaptcha->verify($value, Yii::$app->getRequest()->getUserIP());
         return $response->isSuccess() ? null : [$this->message, []];
     }
+
+
     /**
      * @param \yii\base\Model $model
      * @param string $attribute
