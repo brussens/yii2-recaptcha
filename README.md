@@ -19,14 +19,31 @@ to the require section of your `composer.json` file.
 Add to your bootstrap file:
 ```php
 
-\Yii::$container->set(ReCaptcha\ReCaptcha::class, function() {
-
+$container->setSingleton(\ReCaptcha\ReCaptcha::class, function($container, $params, $config) {
+    return new \ReCaptcha\ReCaptcha('your secret');
 });
 
-\Yii::$container->set(\brussens\yii2\extensions\recaptcha\Widget::class, function() {
-
+$container->set(\brussens\yii2\extensions\recaptcha\Widget::class, function($container, $params, $config) {
+    return new \brussens\yii2\extensions\recaptcha\Widget('your site key', \Yii::$app->language, $config);
 });
 
+```
+
+Since Yii 2.0.11 you can also configure the container in the 'container' section of the app configuration:
+
+```php
+'container' => [
+    'definitions' => [
+        \brussens\yii2\extensions\recaptcha\Widget::class => function($container, $params, $config) {
+            return new \brussens\yii2\extensions\recaptcha\Widget('your site key', \Yii::$app->language, $config);
+        }
+    ],
+    'singletons' => [
+         \ReCaptcha\ReCaptcha::class => function($container, $params, $config) {
+             return new \ReCaptcha\ReCaptcha('your secret');
+         }
+    ]
+]
 ```
 
 Add in your model validation rules
