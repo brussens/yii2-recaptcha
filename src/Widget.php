@@ -17,10 +17,7 @@ use yii\widgets\InputWidget;
 use yii\helpers\Json;
 class Widget extends InputWidget
 {
-    /**
-     * Except languages.
-     */
-    const EXCEPT = ['zh-HK','zh-CN','zh-TW','en-GB','fr-CA','de-AT','de-CH','pt-BR','pt-PT','es-419'];
+
     /**
      * Options of JS script.
      * @see https://developers.google.com/recaptcha/docs/display#js_api
@@ -126,7 +123,8 @@ class Widget extends InputWidget
     protected function getLanguagePrefix()
     {
         $language = $this->language;
-        if(!in_array($language, self::EXCEPT) && preg_match('/[a-z]+-[A-Z0-9]+/', $language)) {
+        $except = ['zh-HK','zh-CN','zh-TW','en-GB','fr-CA','de-AT','de-CH','pt-BR','pt-PT','es-419'];
+        if(!in_array($language, $except) && preg_match('/[a-z]+-[A-Z0-9]+/', $language)) {
             $language = explode('-', $language)[0];
         }
         return $language;
