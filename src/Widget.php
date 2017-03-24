@@ -11,17 +11,13 @@
  * @package brussens\yii2\extensions\recaptcha
  */
 namespace brussens\yii2\extensions\recaptcha;
-use Yii;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;
 use yii\helpers\Json;
 class Widget extends InputWidget
 {
-    /**
-     * Except languages.
-     */
-    const EXCEPT = ['zh-HK','zh-CN','zh-TW','en-GB','fr-CA','de-AT','de-CH','pt-BR','pt-PT','es-419'];
+
     /**
      * Options of JS script.
      * @see https://developers.google.com/recaptcha/docs/display#js_api
@@ -33,6 +29,33 @@ class Widget extends InputWidget
      * @var bool
      */
     public $renderNoScript = true;
+
+    /**
+     * @var string
+     */
+    private $siteKey;
+
+    /**
+     * @var string
+     */
+    private $language;
+
+    /**
+     * Widget constructor.
+     *
+     * @param string $siteKey
+     * @param string $language
+     * @param array $config
+     */
+    public function __construct($siteKey, $language, $config = [])
+    {
+        $this->siteKey  = $siteKey;
+        $this->language = $language;
+
+        parent::__construct($config);
+    }
+
+
     /**
      * @inheritdoc
      */
@@ -41,21 +64,24 @@ class Widget extends InputWidget
         parent::run();
         $this->registerScripts();
 
-        echo $this->hasModel() ?
+        $output = $this->hasModel() ?
         Html::activeHiddenInput($this->model, $this->attribute, $this->options) :
         Html::hiddenInput($this->name, $this->value, $this->options);
 
-        echo Html::tag('div', null, [
+        $output .= Html::tag('div', null, [
             'id' => $this->options['id'] . '-recaptcha-container'
         ]);
         if($this->renderNoScript) {
-            $this->renderNoScript();
+            $output .= $this->renderNoScript();
         }
+
+        return $output;
+
     }
     /**
      * Registration client scripts.
      */
-    protected function registerScripts()
+    private function registerScripts()
     {
         $view = $this->getView();
         $view->registerJsFile(
@@ -63,7 +89,7 @@ class Widget extends InputWidget
             ['position' => $view::POS_HEAD, 'async' => true, 'defer' => true]
         );
 
-        $options = ArrayHelper::merge(['sitekey' => Yii::$app->recaptcha->siteKey], $this->clientOptions);
+        $options = ArrayHelper::merge(['sitekey' => $this->siteKey], $this->clientOptions);
         $view->registerJs(
             'grecaptcha.render("' . $this->options['id'] . '-recaptcha-container", ' . Json::encode($options) . ');',
             $view::POS_LOAD
@@ -74,20 +100,21 @@ class Widget extends InputWidget
      */
     protected function renderNoScript()
     {
-        echo Html::beginTag('noscript');
-        echo Html::tag('iframe', null, [
-            'src' => 'https://www.google.com/recaptcha/api/fallback?k=' . Yii::$app->recaptcha->siteKey,
+        $output = Html::beginTag('noscript');
+        $output .= Html::tag('iframe', null, [
+            'src' => 'https://www.google.com/recaptcha/api/fallback?k=' . $this->siteKey,
             'frameborder' => 0,
             'width' => '302px',
             'height' => '423px',
             'scrolling' => 'no',
             'border-style' => 'none'
         ]);
-        echo Html::textarea('g-recaptcha-response', null, [
+        $output .= Html::textarea('g-recaptcha-response', null, [
             'class' => 'form-control',
             'style' => 'margin-top: 15px'
         ]);
-        echo Html::endTag('noscript');
+        $output .= Html::endTag('noscript');
+        return $output;
     }
     /**
      * Normalize language code.
@@ -95,8 +122,9 @@ class Widget extends InputWidget
      */
     protected function getLanguagePrefix()
     {
-        $language = Yii::$app->language;
-        if(!in_array($language, self::EXCEPT) && preg_match('/[a-z]+-[A-Z0-9]+/', $language)) {
+        $language = $this->language;
+        $except = ['zh-HK','zh-CN','zh-TW','en-GB','fr-CA','de-AT','de-CH','pt-BR','pt-PT','es-419'];
+        if(!in_array($language, $except) && preg_match('/[a-z]+-[A-Z0-9]+/', $language)) {
             $language = explode('-', $language)[0];
         }
         return $language;

@@ -8,19 +8,26 @@
   "authors": [
     {
       "name": "Brusensky Dmitry",
-      "email": "brussens@nativeweb.ru",
-      "url": "http://nativeweb.ru"
+      "email": "brussens@nativeweb.ru"
     }
   ],
-  "minimum-stability": "dev",
+  "minimum-stability": "stable",
   "require": {
     "php": ">=5.4.0",
     "yiisoft/yii2": "*",
     "google/recaptcha": "~1.1"
   },
+  "require-dev": {
+    "phpunit/phpunit": "*"
+  },
   "autoload": {
     "psr-4": {
-      "brussens\\yii2\\extensions\\recaptcha\\": "src"
+      "brussens\\yii2\\extensions\\recaptcha\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "brussens\\yii2\\extensions\\recaptcha\\test\\": "test/"
     }
   }
 }

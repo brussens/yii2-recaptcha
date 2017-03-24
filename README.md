@@ -2,6 +2,9 @@
 [![Latest Stable Version](https://poser.pugx.org/brussens/yii2-recaptcha/v/stable)](https://packagist.org/packages/brussens/yii2-recaptcha)
 [![Total Downloads](https://poser.pugx.org/brussens/yii2-recaptcha/downloads)](https://packagist.org/packages/brussens/yii2-recaptcha)
 [![License](https://poser.pugx.org/brussens/yii2-recaptcha/license)](https://packagist.org/packages/brussens/yii2-recaptcha)
+
+The main difference from the similar extensions is that this one doesn't require an application component with constant name, such as `\Yii::$app->recaptcha` or something.   
+
 ##Install
 Either run
 ```
@@ -16,17 +19,34 @@ or add
 
 to the require section of your `composer.json` file.
 
-Add to your config file:
+Add to your bootstrap file:
 ```php
-'components' => [
-    ...
-    'recaptcha' => [
-        'class' => 'brussens\\yii2\\extensions\\recaptcha\\Component',
-        'siteKey' => '!!!Insert your public key here!!!',
-        'secretKey' => '!!!Insert your secret key here!!!'
+
+$container->setSingleton(\ReCaptcha\ReCaptcha::class, function($container, $params, $config) {
+    return new \ReCaptcha\ReCaptcha('your secret');
+});
+
+$container->set(\brussens\yii2\extensions\recaptcha\Widget::class, function($container, $params, $config) {
+    return new \brussens\yii2\extensions\recaptcha\Widget('your site key', \Yii::$app->language, $config);
+});
+
+```
+
+Since Yii 2.0.11 you can also configure the container in the 'container' section of the app configuration:
+
+```php
+'container' => [
+    'definitions' => [
+        \brussens\yii2\extensions\recaptcha\Widget::class => function($container, $params, $config) {
+            return new \brussens\yii2\extensions\recaptcha\Widget('your site key', \Yii::$app->language, $config);
+        }
     ],
-    ...
-],
+    'singletons' => [
+         \ReCaptcha\ReCaptcha::class => function($container, $params, $config) {
+             return new \ReCaptcha\ReCaptcha('your secret');
+         }
+    ]
+]
 ```
 
 Add in your model validation rules
