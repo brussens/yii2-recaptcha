@@ -1,40 +1,49 @@
 <?php
 /**
- * Google ReCaptcha v 2.0 Yii 2.x.x extension widget.
- * Class Widget
- * @author Brusenskiy Dmitry <brussens@nativeweb.ru>
- * @since 1.0.0
- * @version 1.0.0
- * @link https://github.com/brussens/yii2-recaptcha <Repostory>
- * @copyright 2017 Brusenskiy Dmitry
- * @license http://opensource.org/licenses/MIT MIT
- * @package brussens\yii2\extensions\recaptcha
+ * @link https://github.com/brussens/yii2-recaptcha
+ * @copyright Copyright © since 2017 Brusensky Dmitry. All rights reserved
+ * @licence http://opensource.org/licenses/MIT MIT
  */
+
 namespace brussens\yii2\extensions\recaptcha;
+
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;
 use yii\widgets\InputWidget;
 use yii\helpers\Json;
+
+/**
+ * Google ReCaptcha v 2.0 Yii 2.x.x extension widget.
+ * @package brussens\yii2\extensions\recaptcha
+ * @author Brusensky Dmitry <brussens@nativeweb.ru>
+ */
 class Widget extends InputWidget
 {
-
-    /**
-     * Options of JS script.
-     * @see https://developers.google.com/recaptcha/docs/display#js_api
-     * @var array
-     */
-    public $clientOptions = [];
     /**
      * Flag of rendering noscript section.
      * @var bool
      */
     public $renderNoScript = true;
-
+    /**
+     * JavaScript options.
+     * @see https://developers.google.com/recaptcha/docs/display#js_api
+     * @var array
+     */
+    public $clientOptions = [];
+    /**
+     * noscript > iframe tag options.
+     * @var array
+     */
+    public $noScriptIFrameOptions = [];
+    /**
+     * noscript > textarea tag options.
+     * @var array
+     */
+    public $noScriptTextAreaOptions = [];
     /**
      * @var string
      */
     private $siteKey;
-
     /**
      * @var string
      */
@@ -42,7 +51,6 @@ class Widget extends InputWidget
 
     /**
      * Widget constructor.
-     *
      * @param string $siteKey
      * @param string $language
      * @param array $config
@@ -55,29 +63,30 @@ class Widget extends InputWidget
         parent::__construct($config);
     }
 
-
     /**
      * @inheritdoc
      */
     public function run()
     {
         parent::run();
+
         $this->registerScripts();
 
         $output = $this->hasModel() ?
-        Html::activeHiddenInput($this->model, $this->attribute, $this->options) :
-        Html::hiddenInput($this->name, $this->value, $this->options);
+            Html::activeHiddenInput($this->model, $this->attribute, $this->options) :
+            Html::hiddenInput($this->name, $this->value, $this->options);
 
         $output .= Html::tag('div', null, [
             'id' => $this->options['id'] . '-recaptcha-container'
         ]);
+
         if($this->renderNoScript) {
             $output .= $this->renderNoScript();
         }
 
         return $output;
-
     }
+
     /**
      * Registration client scripts.
      */
@@ -95,27 +104,35 @@ class Widget extends InputWidget
             $view::POS_LOAD
         );
     }
+
     /**
      * Rendering noscript section.
+     * @return string
      */
     protected function renderNoScript()
     {
-        $output = Html::beginTag('noscript');
-        $output .= Html::tag('iframe', null, [
-            'src' => 'https://www.google.com/recaptcha/api/fallback?k=' . $this->siteKey,
-            'frameborder' => 0,
-            'width' => '302px',
-            'height' => '423px',
-            'scrolling' => 'no',
-            'border-style' => 'none'
-        ]);
-        $output .= Html::textarea('g-recaptcha-response', null, [
+        $iFrameOptions = ArrayHelper::merge([
+                'frameborder' => 0,
+                'width' => '302px',
+                'height' => '423px',
+                'scrolling' => 'no',
+                'border-style' => 'none'
+        ], $this->noScriptIFrameOptions);
+        $iFrameOptions['src'] = 'https://www.google.com/recaptcha/api/fallback?k=' . $this->siteKey;
+
+        $textAreaOptions = ArrayHelper::merge([
             'class' => 'form-control',
             'style' => 'margin-top: 15px'
-        ]);
+        ], $this->noScriptTextAreaOptions);
+
+        $output = Html::beginTag('noscript');
+        $output .= Html::tag('iframe', null, $iFrameOptions);
+        $output .= Html::textarea('g-recaptcha-response', null, $textAreaOptions);
         $output .= Html::endTag('noscript');
+
         return $output;
     }
+
     /**
      * Normalize language code.
      * @return string

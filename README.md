@@ -1,11 +1,11 @@
-#Google ReCaptcha v2.0 Yii 2.x.x extension
+# Google ReCaptcha v2.0 Yii 2.x.x extension
 [![Latest Stable Version](https://poser.pugx.org/brussens/yii2-recaptcha/v/stable)](https://packagist.org/packages/brussens/yii2-recaptcha)
 [![Total Downloads](https://poser.pugx.org/brussens/yii2-recaptcha/downloads)](https://packagist.org/packages/brussens/yii2-recaptcha)
 [![License](https://poser.pugx.org/brussens/yii2-recaptcha/license)](https://packagist.org/packages/brussens/yii2-recaptcha)
 
-The main difference from the similar extensions is that this one doesn't require an application component with constant name, such as `\Yii::$app->recaptcha` or something.   
+> The main difference from the similar extensions is that this one doesn't require an application component with constant name, such as `\Yii::$app->recaptcha` or something.   
 
-##Install
+## Install
 Either run
 ```
 php composer.phar require --prefer-dist brussens/yii2-recaptcha "*"
