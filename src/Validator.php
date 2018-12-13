@@ -52,7 +52,7 @@ class Validator extends \yii\validators\Validator
     protected function validateValue($value)
     {
         $request = Yii::$app->getRequest();
-        $value = $request->post('g-recaptcha-response');
+        $value = $request->post('g-recaptcha-response', $value);
         if(!$value) {
             return [Yii::t('yii', '{attribute} cannot be blank.'), []];
         }
